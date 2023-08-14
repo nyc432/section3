@@ -39,6 +39,58 @@
 
         </div>
     </span>
+    <style>
+        .container {
+            font-family: 'Impact', sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            /* Allows flex items to wrap */
+            align-items: baseline;
+            /* Align items at their text baseline */
+            justify-content: center;
+            /* Horizontally center-align content */
+        }
+
+        .text-part,
+        .styled-text {
+            margin: 0;
+            /* Remove margins */
+            padding: 0;
+            /* Remove paddings */
+            line-height: 1.2;
+        }
+
+        .text-part {
+            font-size: 30px;
+        }
+
+        .styled-text {
+            font-size: 40px;
+            color: #FED43F;
+            /* fill color */
+            text-shadow:
+                -2px -2px 0 #000,
+                /* top left */
+                2px -2px 0 #000,
+                /* top right */
+                -2px 2px 0 #000,
+                /* bottom left */
+                2px 2px 0 #000;
+            /* bottom right */
+            transform: scaleX(0.8);
+            /* Adjust width of characters */
+            letter-spacing: 1px;
+            /* Adjust space between characters */
+            margin-left: -10px;
+            /* Counteract letter spacing on the left */
+            margin-right: -10px;
+            /* Counteract letter spacing on the right */
+        }
+    </style>
+    <div class="container">
+        <span class="text-part">(and</span><span class="styled-text">wearable merch</span><span class="text-part">to
+            spread the word)</span>
+    </div>
 
 </div>
 <div class="explore-more text" onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">
