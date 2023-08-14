@@ -1,0 +1,48 @@
+{% extends "juice/templates/index.html" %}
+{% block hero %}
+<div>
+
+
+    <style>
+        /* Default styles for light mode */
+        .hello-text {
+            color: black;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Styles for dark mode */
+        @media (prefers-color-scheme: dark) {
+            .hello-text {
+                color: white;
+            }
+        }
+    </style>
+
+    <span class=" hello-text">
+        <div style="font-family: 'Impact', sans-serif; font-size: 60px; line-height: 1.2;">
+            Section 3 <br>
+            of the US Constitution <br>
+            and Donald J. Trump <br><br>
+        </div>
+        <div style="font-family: 'Impact', sans-serif; font-size: 30px; line-height: 1.2;">
+            <div
+                style="font-family: 'Impact', sans-serif; font-size: 30px; line-height: 1.2; white-space: nowrap; display: flex; align-items: center;">
+                <span>(and</span>
+                <svg width="290" height="80" xmlns="http://www.w3.org/2000/svg">
+                    <text x="10" y="51" font-family="Impact" font-size="40" fill="#FED43F" stroke="black"
+                        stroke-width="2">
+                        wearable merch
+                    </text>
+                </svg>
+                <span>to spread the word)</span>
+            </div>
+
+        </div>
+    </span>
+
+</div>
+<div class="explore-more text" onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">
+    Explore More ⇩
+</div>
+
+{% endblock hero %}
