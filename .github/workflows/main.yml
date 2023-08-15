@@ -2,13 +2,14 @@ on: push
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: "checkout"
         uses: actions/checkout@v3.0.0
       - name: "build and deploy"
         uses: shalzz/zola-deploy-action@v0.17.2
         env:
-          PAGES_BRANCH: master
+          PAGES_BRANCH: gh-pages
           BUILD_DIR: .
           TOKEN: ${{ secrets.PUBLIC_TOKEN }}
           REPOSITORY: nyc432/nyc432.github.io
