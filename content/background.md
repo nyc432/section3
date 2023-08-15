@@ -18,3 +18,4 @@ Many have assumed that this Constitutional restriction is obsolete in today's wo
 Simply having a couple of law professors claim Mr. Trump is ineligible doesn't automatically keep him off the ballot or out of the White House. As of now, he remains the leading Republican Party candidate for the office of President of the United States.
 
 
+[^1]: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4532751
