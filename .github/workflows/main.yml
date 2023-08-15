@@ -25,4 +25,4 @@ jobs:
           PAGES_BRANCH: master
           BUILD_DIR: .
           TOKEN: ${{ secrets.PUBLIC_TOKEN }}
-          REPOSITORY: username/username.github.io
+          REPOSITORY: nyc432/nyc432.github.io
