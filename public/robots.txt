@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 Allow: /
-Sitemap: http://nyc432.gitub.io/sitemap.xml
+Sitemap: http://nyc432.github.io/sitemap.xml
