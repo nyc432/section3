@@ -1,5 +1,5 @@
 # The URL the site will be built for
-base_url = "http://section3.us"
+base_url = "http://nyc542.gitub.io"
 
 # Theme
 theme = "juice"
