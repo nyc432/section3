@@ -1,100 +1,139 @@
-{% extends "juice/templates/index.html" %}
-{% block hero %}
-<div>
+{% import "_macros.html" as macros %}
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% block favicon %}
+    <link rel="icon" type="image/png" href="/favicon.ico">
+    {% endblock favicon %}
+    {% include "_variables.html" %}
+    {% block fonts %}
+    <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600&display=swap" rel="stylesheet">
+    {% endblock fonts %}
+    <link rel="stylesheet" href="/normalize.css">
+    <link rel="stylesheet" href="{{ get_url(path="juice.css") }}">
+    {% block head %}
+    {% endblock head %}
+</head>
+
+<body>
+    {% block header %}
+
+    <header class="pos-absolute" style="background-color: transparent">
+        {{ macros::render_header() }}
+    </header>
 
 
-    <style>
-        /* Default styles for light mode */
-        .hello-text {
-            color: black;
-            font-family: Arial, sans-serif;
-        }
 
-        /* Styles for dark mode */
-        @media (prefers-color-scheme: dark) {
-            .hello-text {
-                color: white;
+    <div class="hero">
+        {% block hero %}
+        <script async defer src="https://buttons.github.io/buttons.js"></script>
+        <section class="text-left">
+            <h1 class="heading-text" style="font-family: Impact; font-size: 50px">
+                Section 3<br>
+                of the US Constitution<br>
+                and Donald J. Trump
+            </h1>
+        </section>
+
+
+        <div class="explore-more text"
+            onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">
+            Explore More ⇩
+        </div>
+        <style>
+            .hero section {
+                padding: 0 5rem;
             }
-        }
-    </style>
 
-    <span class=" hello-text">
-        <div style="font-family: 'Impact', sans-serif; font-size: 60px; line-height: 1.2;">
-            Section 3 <br>
-            of the US Constitution <br>
-            and Donald J. Trump <br><br>
-        </div>
-        <div style="font-family: 'Impact', sans-serif; font-size: 30px; line-height: 1.2;">
-            <div
-                style="font-family: 'Impact', sans-serif; font-size: 30px; line-height: 1.2; white-space: nowrap; display: flex; align-items: center;">
-                <span>(and</span>
-                <svg width="290" height="80" xmlns="http://www.w3.org/2000/svg">
-                    <text x="10" y="51" font-family="Impact" font-size="40" fill="#FED43F" stroke="black"
-                        stroke-width="2">
-                        wearable merch
-                    </text>
-                </svg>
-                <span>to spread the word)</span>
-            </div>
+            @media screen and (max-width: 768px) {
+                .hero section {
+                    padding: 0 2rem;
+                }
 
-        </div>
-    </span>
-    <style>
-        .container {
-            font-family: 'Impact', sans-serif;
-            display: flex;
-            flex-wrap: wrap;
-            /* Allows flex items to wrap */
-            align-items: baseline;
-            /* Align items at their text baseline */
-            justify-content: center;
-            /* Horizontally center-align content */
-        }
-
-        .text-part,
-        .styled-text {
-            margin: 0;
-            /* Remove margins */
-            padding: 0;
-            /* Remove paddings */
-            line-height: 1.2;
-        }
-
-        .text-part {
-            font-size: 30px;
-        }
-
-        .styled-text {
-            font-size: 40px;
-            color: #FED43F;
-            /* fill color */
-            text-shadow:
-                -2px -2px 0 #000,
-                /* top left */
-                2px -2px 0 #000,
-                /* top right */
-                -2px 2px 0 #000,
-                /* bottom left */
-                2px 2px 0 #000;
-            /* bottom right */
-            transform: scaleX(0.8);
-            /* Adjust width of characters */
-            letter-spacing: 1px;
-            /* Adjust space between characters */
-            margin-left: -10px;
-            /* Counteract letter spacing on the left */
-            margin-right: -10px;
-            /* Counteract letter spacing on the right */
-        }
-    </style>
-    <div class="container">
-        <span class="text-part">(and</span><span class="styled-text">wearable merch</span><span class="text-part">
-            to spread the word)</span>
+                .hero-image {
+                    display: none
+                }
+            }
+        </style>
+        {% endblock hero %}
     </div>
 
-</div>
-<div class="explore-more text" onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">
-    Explore More ⇩
-</div>
+    {% endblock header %}
 
-{% endblock hero %}
+    <main>
+        {% block toc %}
+        {% if section.toc %}
+        {% set toc = section.toc %}
+        {% elif page.toc %}
+        {% set toc = page.toc %}
+        {% endif %}
+        {% if toc %}
+        <div class="toc">
+            <div class="toc-sticky">
+                {% for h in toc %}
+                <div class="toc-item">
+                    <a class="subtext" href="{{h.permalink | safe}}">{{ h.title }}</a>
+                </div>
+                {% if h.children %}
+                {% for h2 in h.children %}
+                <div class="toc-item-child">
+                    <a class="subtext" href="{{h2.permalink | safe}}"><small>- {{ h2.title }}</small></a>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endblock toc %}
+
+        <div class="content text">
+            {% block content %}
+            <div id="features" class="heading-text">Overview</div>
+            {{ section.content | safe }}
+            {% endblock content %}
+        </div>
+
+        {% block sidebar %}
+        {% endblock sidebar %}
+    </main>
+
+    {% block footer %}
+    <footer>
+        <small class="subtext">
+            <a href="https://huhu.io">Huhu.io</a> © 2021
+        </small>
+    </footer>
+    {% endblock footer %}
+</body>
+<script>
+    const scrollHandler = entries => {
+        // Find the first entry which intersecting and ratio > 0.9 to highlight.
+        let entry = entries.find(entry => {
+            return entry.isIntersecting && entry.intersectionRatio > 0.9;
+        });
+        if (!entry) return;
+
+        document.querySelectorAll(".toc a").forEach((item) => {
+            item.classList.remove("active");
+        });
+
+        // let url = new URL(`#${entry.target.id}`);
+        let link = document.querySelector(`.toc a[href$="${decodeURIComponent(`#${entry.target.id}`)}"]`)
+        if (link) {
+            link.classList.add("active");
+            link.scrollIntoView({ behavior: "auto", block: "nearest" });
+        }
+    };
+    // Set -100px root margin to improve highlight experience.
+    const observer = new IntersectionObserver(scrollHandler, { threshold: 1 });
+    let items = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+    items.forEach(item => observer.observe(item));
+</script>
+
+</html>

@@ -1,15 +1,15 @@
 +++
-title = "Hello"
-description = "Background"
-weight = 3
+title = "Juice"
+sort_by = "weight"
 +++
 
-# A heading
+# Introduction
+This web page is a dedicated information clearinghouse for efforts to bring about a Supreme Court case to decide whether Donald J. Trump is ineligible for the Presidency due to Section 3 of the United States Constitution.
 
+# Background
 Section 3 of the US Constitution says: 
 > No person shall be a Senator or Representative in Congress, or elector of President and Vice President, or hold any office, civil or military, under the United States, or under any State, who, having previously taken an oath, as a member of Congress, or as an officer of the United States, or as a member of any State legislature, or as an executive or judicial officer of any State, to support the Constitution of the United States, shall have engaged in insurrection or rebellion against the same, or given aid or comfort to the enemies thereof. But Congress may by a vote of two-thirds of each House, remove such disability. 
 >
-# Another heading.
 
 In other words, if Mr. Trump has engaged in insurrection or has "given aid or comfort" to enemies of the United States, he cannot be President again. A vote of two-thirds from both the Senate and House of Representatives would be required to override this rule.
 

@@ -1,5 +1,5 @@
 +++
-title = "Commumity"
+title = "Community"
 description = "Community"
 weight = 4
 +++
