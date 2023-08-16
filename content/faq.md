@@ -1,7 +1,7 @@
 +++
 title = "FAQ"
 description = "Frequently Asked Questions"
-weight = 4
+weight = 5
 +++
 
 ## If Donald J. Trump is an insurrectionist, why didn't Jack Smith charge him with that crime?
