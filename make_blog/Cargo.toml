@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 chrono = "0.4"
-frontmatter = "0.4"
 pulldown-cmark = "0.9"
 regex = "1.5.2"
 gray_matter = "0.2"
