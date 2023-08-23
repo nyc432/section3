@@ -27,76 +27,25 @@
         {{ macros::render_header() }}
     </header>
 
-
-
     <div class="hero">
         {% block hero %}
         <script async defer src="https://buttons.github.io/buttons.js"></script>
-        <section class="text-left">
-            <h1 class="heading-text" style="font-family: Impact; font-size: 50px">
+        <section class="text-center">
+            <h1 class="heading-text" style="font-size: 50px">
                 Section 3<br>
-                of the US Constitution<br>
-                and Donald J. Trump
+                and <br>Donald J. Trump
             </h1>
-
-            <style>
-                .container {
-                    font-family: 'Impact', sans-serif;
-                    display: flex;
-                    flex-wrap: wrap;
-                    /* Allows flex items to wrap */
-                    align-items: baseline;
-                    /* Align items at their text baseline */
-                    justify-content: left;
-                    /* Horizontally center-align content */
-                }
-
-                .text-part,
-                .styled-text {
-                    margin: 0;
-                    /* Remove margins */
-                    padding: 0;
-                    /* Remove paddings */
-                    line-height: 1.2;
-                }
-
-                .text-part {
-                    font-size: 30px;
-                }
-
-                .styled-text {
-                    font-size: 40px;
-                    color: #FED43F;
-                    /* fill color */
-                    text-shadow:
-                        -2px -2px 0 #000,
-                        /* top left */
-                        2px -2px 0 #000,
-                        /* top right */
-                        -2px 2px 0 #000,
-                        /* bottom left */
-                        2px 2px 0 #000;
-                    /* bottom right */
-                    transform: scaleX(0.8);
-                    /* Adjust width of characters */
-                    letter-spacing: 1px;
-                    /* Adjust space between characters */
-                    margin-left: -10px;
-                    /* Counteract letter spacing on the left */
-                    margin-right: -10px;
-                    /* Counteract letter spacing on the right */
-                }
-            </style>
-            <div class="container">
-                <span class="text-part">(and</span><span class="styled-text">wearable merch</span><span
-                    class="text-part">
-                    to spread the word)</span>
-            </div>
-
-
+            <h3 class="title-text">
+                Amendment 14, Section 3, of the US Constitution
+                says insurrectionists and those who comfort or aid
+                enemies of the Constitution cannot be President.
+                Help us make this apply to Donald Trump in 2024.
+                He should not be on the ballot in any state.
+            </h3>
 
         </section>
-
+        <!-- <img class="hero-image" style="width: 50%" src="{{ get_url(path="juice.svg") }}"> -->
+        <img class="hero-image" style="width: 50%" src="garyrob86-23-8-23.svg">
         <div class="explore-more text"
             onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">
             Explore More ⇩
@@ -162,7 +111,7 @@
     {% block footer %}
     <footer>
         <small class="subtext">
-            <a href="https://huhu.io">Huhu.io</a> © 2021
+            <a href="https://section3.us">section3.us</a> © 2023
         </small>
     </footer>
     {% endblock footer %}
