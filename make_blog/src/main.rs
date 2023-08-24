@@ -1,29 +1,52 @@
 use chrono::NaiveDate;
 use pulldown_cmark::{html, Parser};
 use std::fs;
+use std::io::Write;
 use std::collections::BTreeMap;
 use regex::Regex;
 use gray_matter::Matter;
 use gray_matter::engine::TOML;
-use serde::Deserialize;
 
-const INPUT: &str = r#"---
-title: gray-matter-rs
-tags:
-  - gray-matter
-  - rust
----
-Some excerpt
----
-Other stuff
-"#;
+const BLOG_SHELL_PATH: &str = "/Users/garyrob/src/zola/section3/content/blog.md";
+const BLOG_DIR_PATH: &str = "/Users/garyrob/src/zola/section3/content/blog_content";
+
+fn replace_posts_in_template(new_posts: &str) {
+    let content = fs::read_to_string(BLOG_SHELL_PATH)
+        .expect(&format!("Error reading {}", BLOG_SHELL_PATH));
+
+    let re = Regex::new(r"(?s)(//\$\$begin posts\$\$\n)(.*?)(\n//\$\$end posts\$\$)")
+        .expect("Failed to create the regex");
+
+    let new_content = re.replace(&content, |caps: &regex::Captures| {
+        format!("{}{}{}", &caps[1], new_posts, &caps[3])
+    });
+    
+    println!("XXXXXXXX content: {}", content);
+    println!("XXXXXXXX new_content: {}", new_content);
+    println!("XXXXXXXX posts: {}", new_posts);
+
+    let mut file = fs::OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(BLOG_SHELL_PATH)
+        .expect(&format!("Error opening {}", BLOG_SHELL_PATH));
+
+    file.write_all(new_content.as_bytes())
+        .expect(&format!("Error writing to {}", BLOG_SHELL_PATH));
+}
+
+fn remove_front_matter(post_content: &str) -> String {
+    let re_front_matter = Regex::new(r"(?s)^\+\+\+.*?\+\+\+\n").unwrap();
+    re_front_matter.replace(post_content, "").to_string()
+}
+
+
 
 fn main() {
-    let blog_dir = "/Users/garyrob/src/zola/section3/content/blog_content";
     let mut entries: BTreeMap<NaiveDate, (String, String)> = BTreeMap::new();
     let re = Regex::new(r"^\d{4}-\d{2}-\d{2}\.md$").expect("Failed to compile regex");
 
-    for entry in fs::read_dir(blog_dir).expect("Failed to read directory") {
+    for entry in fs::read_dir(BLOG_DIR_PATH).expect("Failed to read directory") {
         if let Ok(entry) = entry {
             println!("unfiltered file");
             let path = entry.path();
@@ -58,8 +81,7 @@ fn main() {
                                 title, date, word_count, read_time, excerpt
                             )
                         ));
-                            
-                        
+                        println!("#####################did insert: {}", date);
                     },
                     Err(e) => println!("Failed to parse front matter: {}", e),
                 }
@@ -69,13 +91,11 @@ fn main() {
 
     let mut output = String::new();
     for (_, (_, content)) in entries {
-        output.push_str(&format!("\n{}\n", content));
-        println!("one entry: {}", content);
+        let content_without_front_matter = remove_front_matter(&content);
+        output.push_str(&format!("\n{}\n", content_without_front_matter));
+        println!("one entry: {}", content_without_front_matter);
     }
+    
 
-    std::fs::write("/Users/garyrob/src/zola/section3/test_blog.md", output).expect("Failed to write output");
-
-   
-
-
+    replace_posts_in_template(&output);
 }
