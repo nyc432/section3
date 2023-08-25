@@ -12,7 +12,7 @@ const BLOG_SHELL_PATH: &str = "/Users/garyrob/src/zola/section3/content/blog.md"
 const BLOG_DIR_PATH: &str = "/Users/garyrob/src/zola/section3/content/blog_content";
 
 fn replace_posts_in_template(new_posts: &str) {
-    
+    println!("XXXXXXXX Content to Insert:\n{}", new_posts);
     let content = fs::read_to_string(BLOG_SHELL_PATH)
         .expect(&format!("Error reading {}", BLOG_SHELL_PATH));
 
@@ -50,8 +50,19 @@ fn get_datetime(file_stem: &str) -> Result<NaiveDateTime, String> {
         .map_err(|_| format!("Error: The file '{}' does not have a proper date-time format.", file_stem))
 }
 
+fn make_full_content(title: &str, datetime: &NaiveDateTime, word_count: usize, read_time: usize, content: &str) -> String {
+    let css_id = title.to_lowercase().replace(" ", "-");
+    
+    let style = format!("<style>\nh1#{} + p {{\n    margin-top: -20px; /* Adjust as necessary */\n}}\n</style>\n", css_id);
+
+    format!(
+        "{}\n# {}\n<small>{} - {} words - {} mins</small>\n\n{}",
+        style, title, datetime, word_count, read_time, content
+    )
+}
+
 fn process_content(datetime: NaiveDateTime, raw_content: &str) -> Result<(NaiveDateTime, String), String> {
-    let content = remove_front_matter(raw_content); 
+    let content = remove_front_matter(raw_content);
     let mut matter = Matter::<TOML>::new();
     matter.delimiter = "+++".to_owned();
     let parsed_content = matter.parse(raw_content);
@@ -62,19 +73,21 @@ fn process_content(datetime: NaiveDateTime, raw_content: &str) -> Result<(NaiveD
         html::push_html(&mut html_content, parser);
         let word_count = html_content.split_whitespace().count();
         let read_time = (word_count / 200) + 1;
-        let mut excerpt = content.split_whitespace().take(100).collect::<Vec<&str>>().join(" ");
+        
+        let excerpt_words = content.split_whitespace().take(100).collect::<Vec<&str>>().join(" ");
+        let mut excerpt = excerpt_words;
         if word_count > 100 {
             excerpt.push_str(&format!("... [more]({})", raw_content));
         }
-        let full_content = format!(
-            "##{}\n<small>{} - {} words - {} mins</small>\n\n{}",
-            title, datetime, word_count, read_time, excerpt
-        );
+
+        let full_content = make_full_content(&title, &datetime, word_count, read_time, &html_content);
+
         Ok((datetime, full_content))
     } else {
         Err(format!("Failed to parse front matter for: {}", datetime))
     }
 }
+
 
 fn main() {
     let mut entries: BTreeMap<NaiveDateTime, String> = BTreeMap::new();
