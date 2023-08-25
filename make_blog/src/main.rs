@@ -46,11 +46,12 @@ fn remove_front_matter(post_content: &str) -> String {
 }
 
 fn get_datetime(file_stem: &str) -> Result<NaiveDateTime, String> {
-    chrono::NaiveDateTime::parse_from_str(file_stem, "%Y-%m-%d %H:%M")
+    // Change the format to use an underscore instead of space
+    chrono::NaiveDateTime::parse_from_str(file_stem, "%Y-%m-%dt%H-%M")
         .map_err(|_| format!("Error: The file '{}' does not have a proper date-time format.", file_stem))
 }
 
-fn make_full_content(datetime: &NaiveDateTime, raw_content: &str) -> Result<String, String> {
+fn make_full_content(datetime: &NaiveDateTime, raw_content: &str, file_stem: &str) -> Result<String, String> {
     let content = remove_front_matter(raw_content);
     let mut matter = Matter::<TOML>::new();
     matter.delimiter = "+++".to_owned();
@@ -74,12 +75,14 @@ fn make_full_content(datetime: &NaiveDateTime, raw_content: &str) -> Result<Stri
         let mut display_content = html_content.clone();
         if word_count > 100 {
             let excerpt = html_content.split_whitespace().take(100).collect::<Vec<&str>>().join(" ");
-            display_content = format!("{}... [more]", excerpt);
+            display_content = format!("{}... <a href=\"/blog_content/{}\">more</a>", excerpt, file_stem);
         }
-        
+
+        let linked_title = format!("<a href=\"/blog_content/{}\">{}</a>", file_stem, title);
+
         let formatted_content = format!(
             "{}\n# {}\n<small>{} - {} words - {} mins</small>\n\n{}<br>",
-            style, title, datetime, word_count, read_time, display_content
+            style, linked_title, datetime, word_count, read_time, display_content
         );
         
         Ok(formatted_content)
@@ -88,8 +91,8 @@ fn make_full_content(datetime: &NaiveDateTime, raw_content: &str) -> Result<Stri
     }
 }
 
-fn process_content(datetime: NaiveDateTime, raw_content: &str) -> Result<(NaiveDateTime, String), String> {
-    match make_full_content(&datetime, raw_content) {
+fn process_content(datetime: NaiveDateTime, raw_content: &str, file_stem: &str) -> Result<(NaiveDateTime, String), String> {
+    match make_full_content(&datetime, raw_content, file_stem) {
         Ok(full_content) => Ok((datetime, full_content)),
         Err(err_msg) => Err(err_msg),
     }
@@ -108,7 +111,7 @@ fn main() {
                 Ok(datetime) => {
                     let raw_content = fs::read_to_string(&path).expect("Failed to read file");
                     
-                    match process_content(datetime, &raw_content) {
+                    match process_content(datetime, &raw_content, file_stem) {
                         Ok((datetime, full_content)) => {
                             entries.insert(datetime, full_content);
                         },
