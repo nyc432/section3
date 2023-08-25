@@ -3,6 +3,7 @@ use pulldown_cmark::{html, Parser};
 use std::fs;
 use std::io::Write;
 use std::collections::BTreeMap;
+use std::process;
 use regex::Regex;
 use gray_matter::Matter;
 use gray_matter::engine::TOML;
@@ -14,12 +15,18 @@ fn replace_posts_in_template(new_posts: &str) {
     let content = fs::read_to_string(BLOG_SHELL_PATH)
         .expect(&format!("Error reading {}", BLOG_SHELL_PATH));
 
-    let re = Regex::new(r"(?s)(//\$\$begin posts\$\$\n)(.*?)(\n//\$\$end posts\$\$)")
+    let re = Regex::new(r"(?s)(<!--\$\$begin posts\$\$-->\n)(.*?)(\n<!--\$\$end posts\$\$-->)")
         .expect("Failed to create the regex");
 
     let new_content = re.replace(&content, |caps: &regex::Captures| {
         format!("{}{}{}", &caps[1], new_posts, &caps[3])
     });
+
+    // Check if replacement was successful
+    if re.captures(&content).is_none() {
+        eprintln!("Error: Failed to find and replace content between markers. Aborting.");
+        process::exit(1);
+    }
 
     let mut file = fs::OpenOptions::new()
         .write(true)
@@ -31,71 +38,77 @@ fn replace_posts_in_template(new_posts: &str) {
         .expect(&format!("Error writing to {}", BLOG_SHELL_PATH));
 }
 
+
 fn remove_front_matter(post_content: &str) -> String {
     let re_front_matter = Regex::new(r"(?s)^\+\+\+.*?\+\+\+\n").unwrap();
-    re_front_matter.replace(post_content, "").to_string()
+    re_front_matter.replace_all(post_content, "").trim().to_string()
+}
+
+fn get_datetime(file_stem: &str) -> Result<NaiveDateTime, String> {
+    chrono::NaiveDateTime::parse_from_str(file_stem, "%Y-%m-%d %H:%M")
+        .map_err(|_| format!("Error: The file '{}' does not have a proper date-time format.", file_stem))
+}
+
+fn process_content(datetime: NaiveDateTime, raw_content: &str) -> Result<(NaiveDateTime, String), String> {
+    let content = remove_front_matter(raw_content); 
+    let mut matter = Matter::<TOML>::new();
+    matter.delimiter = "+++".to_owned();
+    let parsed_content = matter.parse(raw_content);
+
+    if let Some(title) = parsed_content.data.as_ref().unwrap()["title"].as_string().ok() {
+        let parser = Parser::new(&content);
+        let mut html_content = String::new();
+        html::push_html(&mut html_content, parser);
+        let word_count = html_content.split_whitespace().count();
+        let read_time = (word_count / 200) + 1;
+        let mut excerpt = content.split_whitespace().take(100).collect::<Vec<&str>>().join(" ");
+        if word_count > 100 {
+            excerpt.push_str(&format!("... [more]({})", raw_content));
+        }
+        let full_content = format!(
+            "##{}\n<small>{} - {} words - {} mins</small>\n\n{}",
+            title, datetime, word_count, read_time, excerpt
+        );
+        Ok((datetime, full_content))
+    } else {
+        Err(format!("Failed to parse front matter for: {}", datetime))
+    }
 }
 
 fn main() {
-    let mut entries: BTreeMap<NaiveDateTime, (String, String)> = BTreeMap::new();
-    let re = Regex::new(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}\.md$").expect("Failed to compile regex");
+    let mut entries: BTreeMap<NaiveDateTime, String> = BTreeMap::new();
 
     for entry in fs::read_dir(BLOG_DIR_PATH).expect("Failed to read directory") {
         if let Ok(entry) = entry {
-            println!("unfiltered file");
             let path = entry.path();
-            let file_name_str = path.file_name().unwrap().to_string_lossy();
-            println!("file_name_str: {}",file_name_str);
-            if re.is_match(&file_name_str) {
-                println!("filtered file {}", &file_name_str);
-                let content = fs::read_to_string(&path).expect("Failed to read file");
-                println!("Content: {}", &content);
-                let mut matter = Matter::<TOML>::new();
-                matter.delimiter = "+++".to_owned();
-                let something = matter.parse(&content);
+            let file_stem = path.file_stem().unwrap().to_str().unwrap();
 
-                let file_stem = path.file_stem().unwrap().to_str().unwrap();
-                println!("File stem: {}",file_stem);
-                match chrono::NaiveDateTime::parse_from_str(file_stem, "%Y-%m-%d %H:%M") {
-                    Ok(datetime) => {
-                        match something.data.as_ref().unwrap()["title"].as_string() {
-                            Ok(title) => {
-                                println!("title {}", &title);
-                                let markdown_content = content.trim();
-                                let parser = Parser::new(&markdown_content);
-                                let mut html_content = String::new();
-                                html::push_html(&mut html_content, parser);
-                                let word_count = html_content.split_whitespace().count();
-                                let read_time = (word_count / 200) + 1;
-                                let mut excerpt = markdown_content.split_whitespace().take(100).collect::<Vec<&str>>().join(" ");
-                                if word_count > 100 {
-                                    excerpt.push_str(&format!("... [more]({})", path.display()));
-                                }
-                                entries.insert(datetime, (
-                                    title.to_string(),
-                                    format!(
-                                        "<h3>{}</h3>\n<small>{} - {} words - {} mins</small>\n\n{}",
-                                        title, datetime, word_count, read_time, excerpt
-                                    )
-                                ));
-                                println!("#####################did insert: {}", datetime);
-                            },
-                            Err(e) => println!("Failed to parse front matter: {}", e),
+            match get_datetime(file_stem) {
+                Ok(datetime) => {
+                    let raw_content = fs::read_to_string(&path).expect("Failed to read file");
+                    
+                    match process_content(datetime, &raw_content) {
+                        Ok((datetime, full_content)) => {
+                            entries.insert(datetime, full_content);
+                        },
+                        Err(err_msg) => {
+                            println!("{}", err_msg);
                         }
-                    },
-                    Err(_) => {
-                        println!("Error: The file '{}' has an invalid name format.", file_stem);
                     }
+                },
+                Err(err_msg) => {
+                    println!("{}", err_msg);
                 }
             }
         }
     }
 
     let mut output = String::new();
-    for (_, (_, content)) in entries {
-        let content_without_front_matter = remove_front_matter(&content);
-        output.push_str(&format!("\n{}\n", content_without_front_matter));
-        println!("one entry: {}", content_without_front_matter);
+    for (_, content) in entries {
+        output.push_str(&format!("\n{}\n", content)); 
+        println!("\n-------------------------------");
+        println!("{}", content);
+        println!("-------------------------------\n");
     }
 
     replace_posts_in_template(&output);
