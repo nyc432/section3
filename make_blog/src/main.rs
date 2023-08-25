@@ -50,41 +50,48 @@ fn get_datetime(file_stem: &str) -> Result<NaiveDateTime, String> {
         .map_err(|_| format!("Error: The file '{}' does not have a proper date-time format.", file_stem))
 }
 
-fn make_full_content(title: &str, datetime: &NaiveDateTime, word_count: usize, read_time: usize, content: &str) -> String {
-    let css_id = title.to_lowercase().replace(" ", "-");
-    
-    let style = format!("<style>\nh1#{} + p {{\n    margin-top: -20px; /* Adjust as necessary */\n}}\n</style>\n", css_id);
-
-    format!(
-        "{}\n# {}\n<small>{} - {} words - {} mins</small>\n\n{}",
-        style, title, datetime, word_count, read_time, content
-    )
-}
-
-fn process_content(datetime: NaiveDateTime, raw_content: &str) -> Result<(NaiveDateTime, String), String> {
+fn make_full_content(datetime: &NaiveDateTime, raw_content: &str) -> Result<String, String> {
     let content = remove_front_matter(raw_content);
     let mut matter = Matter::<TOML>::new();
     matter.delimiter = "+++".to_owned();
     let parsed_content = matter.parse(raw_content);
-
+    
     if let Some(title) = parsed_content.data.as_ref().unwrap()["title"].as_string().ok() {
         let parser = Parser::new(&content);
         let mut html_content = String::new();
         html::push_html(&mut html_content, parser);
+        
         let word_count = html_content.split_whitespace().count();
         let read_time = (word_count / 200) + 1;
         
-        let excerpt_words = content.split_whitespace().take(100).collect::<Vec<&str>>().join(" ");
-        let mut excerpt = excerpt_words;
+        let css_id = title.to_lowercase().replace(" ", "-");
+        let style = format!(
+            "<style>\nh1#{} + p {{\n    margin-top: -20px; /* Adjust as necessary */\n}}\n</style>\n",
+            css_id
+        );
+        
+        // Truncate if more than 100 words
+        let mut display_content = html_content.clone();
         if word_count > 100 {
-            excerpt.push_str(&format!("... [more]({})", raw_content));
+            let excerpt = html_content.split_whitespace().take(100).collect::<Vec<&str>>().join(" ");
+            display_content = format!("{}... [more]", excerpt);
         }
-
-        let full_content = make_full_content(&title, &datetime, word_count, read_time, &html_content);
-
-        Ok((datetime, full_content))
+        
+        let formatted_content = format!(
+            "{}\n# {}\n<small>{} - {} words - {} mins</small>\n\n{}<br>",
+            style, title, datetime, word_count, read_time, display_content
+        );
+        
+        Ok(formatted_content)
     } else {
         Err(format!("Failed to parse front matter for: {}", datetime))
+    }
+}
+
+fn process_content(datetime: NaiveDateTime, raw_content: &str) -> Result<(NaiveDateTime, String), String> {
+    match make_full_content(&datetime, raw_content) {
+        Ok(full_content) => Ok((datetime, full_content)),
+        Err(err_msg) => Err(err_msg),
     }
 }
 
