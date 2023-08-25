@@ -12,6 +12,7 @@ const BLOG_SHELL_PATH: &str = "/Users/garyrob/src/zola/section3/content/blog.md"
 const BLOG_DIR_PATH: &str = "/Users/garyrob/src/zola/section3/content/blog_content";
 
 fn replace_posts_in_template(new_posts: &str) {
+    
     let content = fs::read_to_string(BLOG_SHELL_PATH)
         .expect(&format!("Error reading {}", BLOG_SHELL_PATH));
 
@@ -24,7 +25,7 @@ fn replace_posts_in_template(new_posts: &str) {
 
     // Check if replacement was successful
     if re.captures(&content).is_none() {
-        eprintln!("ERROR: FAILED TO FIND AND REPLACE CONTENT BETWEEN MARKERS. ABORTING."");
+        eprintln!("ERROR: FAILED TO FIND AND REPLACE CONTENT BETWEEN MARKERS. ABORTING.");
         process::exit(1);
     }
 
