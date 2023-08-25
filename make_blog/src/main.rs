@@ -24,7 +24,7 @@ fn replace_posts_in_template(new_posts: &str) {
 
     // Check if replacement was successful
     if re.captures(&content).is_none() {
-        eprintln!("Error: Failed to find and replace content between markers. Aborting.");
+        eprintln!("ERROR: FAILED TO FIND AND REPLACE CONTENT BETWEEN MARKERS. ABORTING."");
         process::exit(1);
     }
 
