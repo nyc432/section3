@@ -8,7 +8,11 @@ Blog posts go in blog_content. Names must be in the format
 
     yyyy-mm-ddthh-mm.md
 
-Why the "t" you may ask? 
+Why the "t" you may ask? Because if I put a dash in that spot a file name otherwise identical to one that works and then do 
+
+    zola serve
+
+it isn't reachable at the URL. I have absolutely no idea why this would be the case. It's bizarre but it appears to be the way it is.
 
 
 They must have frontmatter like
