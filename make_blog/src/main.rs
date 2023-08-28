@@ -1,8 +1,9 @@
 use chrono::NaiveDateTime;
-use pulldown_cmark::{html, Parser};
+use pulldown_cmark::{Parser, Event};
 use std::fs;
 use std::io::Write;
 use std::collections::BTreeMap;
+use std::path::Path;
 use std::process;
 use regex::Regex;
 use gray_matter::Matter;
@@ -10,6 +11,7 @@ use gray_matter::engine::TOML;
 
 const BLOG_SHELL_PATH: &str = "/Users/garyrob/src/zola/section3/content/blog.md";
 const BLOG_DIR_PATH: &str = "/Users/garyrob/src/zola/section3/content/blog_content";
+const BLOG_POSTS_PATH: &str = "/Users/garyrob/src/zola/section3/content/posts";
 
 fn replace_posts_in_template(new_posts: &str) {
     println!("XXXXXXXX Content to Insert:\n{}", new_posts);
@@ -51,49 +53,115 @@ fn get_datetime(file_stem: &str) -> Result<NaiveDateTime, String> {
         .map_err(|_| format!("Error: The file '{}' does not have a proper date-time format.", file_stem))
 }
 
-fn make_full_content(datetime: &NaiveDateTime, raw_content: &str, file_stem: &str) -> Result<String, String> {
-    let content = remove_front_matter(raw_content);
+fn get_title(raw_content: &str) -> String {
     let mut matter = Matter::<TOML>::new();
     matter.delimiter = "+++".to_owned();
     let parsed_content = matter.parse(raw_content);
-    
+
     if let Some(title) = parsed_content.data.as_ref().unwrap()["title"].as_string().ok() {
-        let parser = Parser::new(&content);
-        let mut html_content = String::new();
-        html::push_html(&mut html_content, parser);
-        
-        let word_count = html_content.split_whitespace().count();
-        let read_time = (word_count / 200) + 1;
-        
-        let css_id = title.to_lowercase().replace(" ", "-");
-        let style = format!(
-            "<style>\nh1#{} + p {{\n    margin-top: -20px; /* Adjust as necessary */\n}}\n</style>\n",
-            css_id
-        );
-        
-        // Truncate if more than 100 words
-        let mut display_content = html_content.clone();
-        if word_count > 100 {
-            let excerpt = html_content.split_whitespace().take(100).collect::<Vec<&str>>().join(" ");
-            display_content = format!("{}... <a href=\"/blog_content/{}\">more</a>", excerpt, file_stem);
-        }
-
-        let linked_title = format!("<a href=\"/blog_content/{}\">{}</a>", file_stem, title);
-
-        let formatted_content = format!(
-            "{}\n# {}\n<small>{} - {} words - {} mins</small>\n\n{}<br>",
-            style, linked_title, datetime, word_count, read_time, display_content
-        );
-        
-        Ok(formatted_content)
+        title.to_string()
     } else {
-        Err(format!("Failed to parse front matter for: {}", datetime))
+        eprintln!("ERROR: Failed to parse front matter for title. ABORTING.");
+        process::exit(1);
     }
 }
 
-fn process_content(datetime: NaiveDateTime, raw_content: &str, file_stem: &str) -> Result<(NaiveDateTime, String), String> {
-    match make_full_content(&datetime, raw_content, file_stem) {
-        Ok(full_content) => Ok((datetime, full_content)),
+fn get_nicer_blog_content(less_nice: &str) -> String {
+    let title = get_title(less_nice);
+    if title.contains("#") {
+        eprintln!("ERROR: Title contains '#'. ABORTING.");
+        std::process::exit(1);        
+    }
+    let added_heading_level = less_nice.replace("# ", "## ");
+    let parts: Vec<&str> = added_heading_level.splitn(3, "+++").collect();
+    if parts.len() < 3 {
+        eprintln!("ERROR: Input does not contain two occurrences of '+++'. ABORTING.");
+        std::process::exit(1);
+    }
+    if !parts[0].is_empty() {
+        eprintln!("ERROR: Unexpected content before first '+++'. ABORTING.");
+        std::process::exit(1);
+    }
+    format!("+++{}+++\n# {}{}", parts[1], title, parts[2])
+}
+
+fn write_post(datetime: &str, content: &str) {
+    let path = Path::new(BLOG_POSTS_PATH).join(datetime);
+    if fs::write(path, content).is_err() {
+        eprintln!("ERROR: Failed to write content to file. ABORTING.");
+        std::process::exit(1);
+    }
+}
+
+fn get_without_headers(content: &str) -> String {
+    content.lines()
+        .map(|line| {
+            if line.starts_with('#') {
+                let trimmed_line = line.trim_start_matches('#').trim();
+                format!("{}:", trimmed_line)
+            } else {
+                line.to_string()
+            }
+        })
+        .collect::<Vec<String>>()
+        .join("\n")
+}
+
+fn remove_markdown(markdown: &str) -> String {
+    let parser = Parser::new(markdown);
+    let mut text = String::new();
+    for event in parser {
+        match event {
+            Event::Text(t) => text.push_str(&t),
+            Event::Code(c) => text.push_str(&c),
+            Event::SoftBreak | Event::HardBreak => text.push('\n'),
+            _ => (),
+        }
+    }
+    text
+}
+
+fn make_entry_summary_html(datetime: &NaiveDateTime, raw_content: &str, file_stem: &str) -> Result<String, String> {
+    let content_no_frontmatter = remove_front_matter(raw_content);
+    let content_no_frontmatter_or_headers = get_without_headers(&content_no_frontmatter);
+    // I removed headers in a way that puts a colon at the end of the header
+    // line. Now I try to remove the rest of the markdown.
+    let content_pure_text = remove_markdown(&content_no_frontmatter_or_headers);
+    let title = get_title(raw_content);
+   
+    let word_count = content_pure_text.split_whitespace().count();
+    let read_time = (word_count / 200) + 1;
+    
+    let css_id = title.to_lowercase().replace(" ", "-");
+    let style = format!(
+        "<style>\nh1#{} + p {{\n    margin-top: -20px; /* Adjust as necessary */\n}}\n</style>\n",
+        css_id
+    );
+
+    
+    // Truncate if more than 100 words
+    let display_content = if word_count > 100 {
+        let excerpt = content_pure_text.split_whitespace().take(100).collect::<Vec<&str>>().join(" ");
+        format!("{}... <a href=\"/blog_content/{}\">more</a>", excerpt, file_stem)
+    } else {
+        content_pure_text
+    };
+
+    let linked_title = format!("<a href=\"/blog_content/{}\">{}</a>", file_stem, title);
+
+    let formatted_entry_summary = format!(
+        "{}\n# {}\n<small>{} - {} words - {} mins</small>\n\n{}<br>",
+        style, linked_title, datetime, word_count, read_time, display_content
+    );
+    
+    Ok(formatted_entry_summary)
+}
+
+
+
+fn process_next_summary_entry_content(datetime: NaiveDateTime, raw_content: &str, file_stem: &str) -> Result<(NaiveDateTime, String), String> {
+    match make_entry_summary_html(&datetime, raw_content, file_stem) {
+        Ok(entry_summary_html) => Ok((datetime, entry_summary_html)),
         Err(err_msg) => Err(err_msg),
     }
 }
@@ -111,14 +179,17 @@ fn main() {
                 Ok(datetime) => {
                     let raw_content = fs::read_to_string(&path).expect("Failed to read file");
                     
-                    match process_content(datetime, &raw_content, file_stem) {
-                        Ok((datetime, full_content)) => {
-                            entries.insert(datetime, full_content);
+                    match process_next_summary_entry_content(datetime, &raw_content, file_stem) {
+                        Ok((datetime, entry_summary_html)) => {
+                            entries.insert(datetime, entry_summary_html);
                         },
                         Err(err_msg) => {
                             println!("{}", err_msg);
                         }
                     }
+                    let post_content = get_nicer_blog_content(&raw_content);
+                    let post_file_name = format!("{}.md", file_stem);
+                    write_post(&post_file_name, &post_content);
                 },
                 Err(err_msg) => {
                     println!("{}", err_msg);
