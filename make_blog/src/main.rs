@@ -134,7 +134,7 @@ fn make_entry_summary_html(datetime: &NaiveDateTime, raw_content: &str, file_ste
     
     let css_id = title.to_lowercase().replace(" ", "-");
     let style = format!(
-        "<style>\nh1#{} + p {{\n    margin-top: -20px; /* Adjust as necessary */\n}}\n</style>\n",
+        "<style>\n,<h1>{}</h1> + p {{\n    margin-top: -20px; /* Adjust as necessary */\n}}\n</style>\n",
         css_id
     );
 
@@ -142,12 +142,12 @@ fn make_entry_summary_html(datetime: &NaiveDateTime, raw_content: &str, file_ste
     // Truncate if more than 100 words
     let display_content = if word_count > 100 {
         let excerpt = content_pure_text.split_whitespace().take(100).collect::<Vec<&str>>().join(" ");
-        format!("{}... <a href=\"/blog_content/{}\">more</a>", excerpt, file_stem)
+        format!("{}... <a href=\"/posts/{}\">more</a>", excerpt, file_stem)
     } else {
         content_pure_text
     };
 
-    let linked_title = format!("<a href=\"/blog_content/{}\">{}</a>", file_stem, title);
+    let linked_title = format!("<a href=\"/posts/{}\">{}</a>", file_stem, title);
 
     let formatted_entry_summary = format!(
         "{}\n# {}\n<small>{} - {} words - {} mins</small>\n\n{}<br>",
