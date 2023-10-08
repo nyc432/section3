@@ -40,6 +40,6 @@
 .content blockquote {
   border-left: #e2dede 8px solid;
   margin: 0;
-  background-color: #f2f1f0;
+  background-color: var(--blockquote-background-color);
   padding: 0 20px;
 }
