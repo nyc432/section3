@@ -1,7 +1,7 @@
 +++
 title = "News"
 description = "14th Amendment News"
-weight = 5
+weight = 1
 +++
 
 <style>
