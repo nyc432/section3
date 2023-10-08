@@ -32,6 +32,3 @@ Regardless of the initial lawsuit's outcome, appeals will likely ensue until at 
 We can be sure that any decision by a public official to exclude Mr. Trump from a state ballot will result in lawsuits. Both the official and their decision will require legal defense, and one of these cases might make its way to the Supreme Court.
 
 A primary objective of this site is to monitor fundraising efforts related to this cause. As these initiatives emerge, we will provide information on where people can contribute.
-
-## Who we are.
-14th.news was created by Gary Robinson, who also created the tracking cookie and (see column 10, line 9 of [his patent](https://patents.google.com/patent/US5918014A/en)), as well as some [math](https://www.linuxjournal.com/article/6467) that is commonly used in spam filters. 
