@@ -4,4 +4,4 @@ description = "Merchandise"
 weight = 2
 +++
 
-For merch, please visit our [store](https://www.bonfire.com/store/the-14th-amendment-store/)!
+For merch that will help us spread the word about this critically important issue, please visit our [store](https://www.bonfire.com/store/the-14th-amendment-store/)!
