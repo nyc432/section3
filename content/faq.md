@@ -17,9 +17,11 @@ It's possible that Smith is considering it, especially if he's working towards p
 
 When contemplating a charge of insurrection against Trump, Smith would certainly consider the fact that criminal charges demand proof beyond a reasonable doubt. This is a rigorous standard, set so high because society prioritizes preventing the wrongful conviction of innocent individuals.
 
-In contrast, civil cases operate under the "preponderance of the evidence" standard. And [that's what a 14th Amendment case against Mr. Trump would be](https://thinkbigpicture.substack.com/p/trump-president-14th-amendment-disqualify). This standard says that you need just over 50% of the evidence to say that Trump is an insurrectionist and the ruling would be that he is barred.
+However, however invoking the 14th Amendment is not a criminal charge. And any lawsuits involved with keeping Trump off a ballot will be civil. For instance, here's [one discussion](https://thinkbigpicture.substack.com/p/trump-president-14th-amendment-disqualify) of the topic: 
 
-So, even if he's never convicted of a crime, or is in fact unconvictable because of the required standard of proof, there remains the possibility that he could be prohibited from the Presidency under the 14th Amendment.
+> Plaintiffs, perhaps in separate cases across several states, will be seeking court declaration that Trump engaged in insurrection or rebellion or otherwise gave aid or comfort to the enemies of the U.S. through his actions, and inactions, around January 6. Importantly, these would not be criminal trials. Instead, they would be civil ones, which means the burden of proof would only be a preponderance of the evidence, or just over 50 percent. 
+
+So, even if he's never convicted of a crime, or is in fact unconvictable because of the required standard of proof, there remains the strong possibility that should be prohibited from the Presidency under the 14th Amendment.
 
 
 

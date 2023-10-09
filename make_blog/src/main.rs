@@ -148,12 +148,14 @@ fn make_entry_summary_html(datetime: &NaiveDateTime, raw_content: &str, file_ste
     };
 
     let linked_title = format!("<a href=\"/posts/{}\">{}</a>", file_stem, title);
-
+    
     let formatted_entry_summary = format!(
-        "{}\n# {}\n<small>{} - {} words - {} mins</small>\n\n{}<br>",
-        style, linked_title, datetime, word_count, read_time, display_content
+        "{}\n# {}\n<small>{} - {} words - {} min{}</small>\n\n{}<br>",
+        style, linked_title, datetime, word_count, read_time, 
+        if read_time == 1 { "" } else { "s" }, display_content
     );
     
+
     Ok(formatted_entry_summary)
 }
 
@@ -199,7 +201,7 @@ fn main() {
     }
 
     let mut output = String::new();
-    for (_, content) in entries {
+    for (_, content) in entries.iter().rev() {
         output.push_str(&format!("\n{}\n", content)); 
         println!("\n-------------------------------");
         println!("{}", content);
