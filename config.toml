@@ -1,5 +1,6 @@
 # The URL the site will be built for
-base_url = "https://section3-nu.vercel.app"
+#base_url = "https://section3-nu.vercel.app"
+base_url = "https://www.14th.news"
 
 # Theme
 theme = "juice"
