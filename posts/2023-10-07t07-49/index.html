@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Before leaving for big trip |  </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link rel="icon" type="image/png" href="/favicon.ico">
+    
+    <style>
+    :root {
+        /* Primary theme color */
+        /* --primary-color: #FED43F; */
+
+        /* --primary-color: #BD0019; 
+         --primary-color: #FCFCFC; 
+
+        /* complementary green: #00bda4; */
+        /*  --primary-color: #FFFFFF; */
+        /* Primary theme text color */
+        /* --primary-text-color: #543631; */
+        --primary-text-color: #000000;
+        --primary-text-color-over: #000;
+        /* Primary theme link color */
+        /* --primary-link-color: #F9BB2D; */
+        --primary-link-color: #BD0019;
+        /* Secondary color: the background body color */
+        /* --secondary-color: #fcfaf6; */
+        --secondary-color: #FCFCFC;
+        --secondary-text-color: #303030;
+        /* Highlight text color of table of content */
+        /* --toc-highlight-text-color: #d46e13; */
+        --toc-highlight-text-color: #BD0019;
+        --toc-background-color: #FCFCFC;
+        --code-color: #4a4a4a;
+        --code-background-color: white;
+
+        --shadow-color: #FCFCFC;
+
+
+        --blockquote-background-color: #ddd;
+
+        /* Font used for headers (h1 & h2) */
+        --h1-bar-color: #000;
+        --header-font-family: "Fira Sans", sans-serif;
+        /* Font used for text */
+        --text-font-family: "Fira Sans", sans-serif;
+    }
+</style>
+    
+    <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/normalize.css">
+    <link rel="stylesheet" href="https://www.14th.news/juice.css">
+    
+    
+</head>
+
+<body>
+    
+<header class="box-shadow">
+    
+
+<a href="https://www.14th.news/">
+    <div class="logo">
+        <img src="https://www.14th.news/test.svg" alt="logo">
+        
+    </div>
+</a>
+
+<nav>
+    
+    
+    
+    <a class="nav-item subtitle-text" href="https://www.14th.news/blog/">News</a>
+    
+    
+    
+    
+    <a class="nav-item subtitle-text" href="https://www.14th.news/merch/">Merch</a>
+    
+    
+    
+    
+    <a class="nav-item subtitle-text" href="https://www.14th.news/about/">About</a>
+    
+    
+    
+    
+    <a class="nav-item subtitle-text" href="https://www.14th.news/community/">Community</a>
+    
+    
+    
+    
+    <a class="nav-item subtitle-text" href="https://www.14th.news/faq/">FAQ</a>
+    
+    
+    
+    
+    <a class="nav-item subtitle-text" href="https://www.14th.news/contact/">Contact</a>
+    
+    
+    
+</nav>
+
+</header>
+
+
+    <main>
+        
+        
+        
+        
+        
+        <div class="toc">
+            <div class="toc-sticky">
+                
+                <div class="toc-item">
+                    <a class="subtext" href="https://www.14th.news/posts/2023-10-07t07-49/#before-leaving-for-big-trip">Before leaving for big trip</a>
+                </div>
+                
+                
+                <div class="toc-item-child">
+                    <a class="subtext" href="https://www.14th.news/posts/2023-10-07t07-49/#before-leaving-for-big-trip-1"><small>- Before leaving for big trip</small></a>
+                </div>
+                
+                
+                
+            </div>
+        </div>
+        
+        
+
+        <div class="content text">
+            
+<div class="heading-text"></div>
+<h1 id="before-leaving-for-big-trip">Before leaving for big trip</h1>
+<h2 id="before-leaving-for-big-trip-1">Before leaving for big trip</h2>
+<h3 id="trying-to-get-it-all-working">trying to get it all working</h3>
+<p>Does it?</p>
+
+
+        </div>
+
+        
+        
+    </main>
+
+    
+    <footer>
+        <small class="subtext">
+            <a href="https://14th.news">14th.news</a> © 2023
+        </small>
+    </footer>
+    
+</body>
+<script>
+    const scrollHandler = entries => {
+        // Find the first entry which intersecting and ratio > 0.9 to highlight.
+        let entry = entries.find(entry => {
+            return entry.isIntersecting && entry.intersectionRatio > 0.9;
+        });
+        if (!entry) return;
+
+        document.querySelectorAll(".toc a").forEach((item) => {
+            item.classList.remove("active");
+        });
+
+        // let url = new URL(`#${entry.target.id}`);
+        let link = document.querySelector(`.toc a[href$="${decodeURIComponent(`#${entry.target.id}`)}"]`)
+        if (link) {
+            link.classList.add("active");
+            link.scrollIntoView({ behavior: "auto", block: "nearest" });
+        }
+    };
+    // Set -100px root margin to improve highlight experience.
+    const observer = new IntersectionObserver(scrollHandler, { threshold: 1 });
+    let items = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+    items.forEach(item => observer.observe(item));
+</script>
+
+</html>
